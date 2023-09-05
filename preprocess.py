@@ -294,55 +294,55 @@ def face_mask_google_mediapipe(
 
                 print(bbox)
 
-                # Extract face landmarks
-                face_landmarks = face_mesh.process(
-                    image_np[bbox[1] : bbox[1] + bbox[3], bbox[0] : bbox[0] + bbox[2]]
-                ).multi_face_landmarks
-
-                # https://github.com/google/mediapipe/issues/1615
-                # This was def helpful
-                indexes = [
-                    10,
-                    338,
-                    297,
-                    332,
-                    284,
-                    251,
-                    389,
-                    356,
-                    454,
-                    323,
-                    361,
-                    288,
-                    397,
-                    365,
-                    379,
-                    378,
-                    400,
-                    377,
-                    152,
-                    148,
-                    176,
-                    149,
-                    150,
-                    136,
-                    172,
-                    58,
-                    132,
-                    93,
-                    234,
-                    127,
-                    162,
-                    21,
-                    54,
-                    103,
-                    67,
-                    109,
-                ]
-
-                if face_landmarks:
+                if face_landmarks := face_mesh.process(
+                    image_np[
+                        bbox[1] : bbox[1] + bbox[3],
+                        bbox[0] : bbox[0] + bbox[2],
+                    ]
+                ).multi_face_landmarks:
                     mask = Image.new("L", (iw, ih), 0)
                     mask_np = np.array(mask)
+
+                    # https://github.com/google/mediapipe/issues/1615
+                    # This was def helpful
+                    indexes = [
+                        10,
+                        338,
+                        297,
+                        332,
+                        284,
+                        251,
+                        389,
+                        356,
+                        454,
+                        323,
+                        361,
+                        288,
+                        397,
+                        365,
+                        379,
+                        378,
+                        400,
+                        377,
+                        152,
+                        148,
+                        176,
+                        149,
+                        150,
+                        136,
+                        172,
+                        58,
+                        132,
+                        93,
+                        234,
+                        127,
+                        162,
+                        21,
+                        54,
+                        103,
+                        67,
+                        109,
+                    ]
 
                     for face_landmark in face_landmarks:
                         face_landmark = [face_landmark.landmark[idx] for idx in indexes]

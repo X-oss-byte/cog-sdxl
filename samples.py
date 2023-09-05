@@ -49,7 +49,7 @@ def main():
     ]
 
     gen(
-        f"sample.txt2img.png",
+        "sample.txt2img.png",
         prompt="A studio portrait photo of a cat",
         num_inference_steps=25,
         guidance_scale=7,
@@ -101,7 +101,7 @@ def main():
         )
 
     gen(
-        f"sample.refine.txt2img.png",
+        "sample.refine.txt2img.png",
         prompt="A studio portrait photo of a cat",
         num_inference_steps=25,
         guidance_scale=7,
@@ -112,7 +112,7 @@ def main():
         height=1024,
     )
     gen(
-        f"sample.refine.10.txt2img.png",
+        "sample.refine.10.txt2img.png",
         prompt="A studio portrait photo of a cat",
         num_inference_steps=25,
         guidance_scale=7,
