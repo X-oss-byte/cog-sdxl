@@ -121,7 +121,7 @@ def train(
     ),
 ) -> TrainingOutput:
     # Hard-code token_map for now. Make it configurable once we support multiple concepts or user-uploaded caption csv.
-    token_map = token_string + ":2"
+    token_map = f"{token_string}:2"
 
     # Process 'token_to_train' and 'input_data_tar_or_zip'
     inserting_list_tokens = token_map.split(",")

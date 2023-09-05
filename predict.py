@@ -43,8 +43,8 @@ SAFETY_URL = "https://weights.replicate.delivery/default/sdxl/safety-1.0.tar"
 
 
 class KarrasDPM:
-    def from_config(config):
-        return DPMSolverMultistepScheduler.from_config(config, use_karras_sigmas=True)
+    def from_config(self):
+        return DPMSolverMultistepScheduler.from_config(self, use_karras_sigmas=True)
 
 
 SCHEDULERS = {
@@ -352,12 +352,12 @@ class Predictor(BasePredictor):
             sdxl_kwargs["height"] = height
             pipe = self.txt2img_pipe
 
-        if refine == "expert_ensemble_refiner":
-            sdxl_kwargs["output_type"] = "latent"
-            sdxl_kwargs["denoising_end"] = high_noise_frac
-        elif refine == "base_image_refiner":
+        if refine == "base_image_refiner":
             sdxl_kwargs["output_type"] = "latent"
 
+        elif refine == "expert_ensemble_refiner":
+            sdxl_kwargs["output_type"] = "latent"
+            sdxl_kwargs["denoising_end"] = high_noise_frac
         if not apply_watermark:
             # toggles watermark for this prediction
             watermark_cache = pipe.watermark
@@ -380,15 +380,18 @@ class Predictor(BasePredictor):
 
         output = pipe(**common_args, **sdxl_kwargs)
 
-        if refine in ["expert_ensemble_refiner", "base_image_refiner"]:
+        if refine == "base_image_refiner":
             refiner_kwargs = {
                 "image": output.images,
             }
 
-            if refine == "expert_ensemble_refiner":
-                refiner_kwargs["denoising_start"] = high_noise_frac
-            if refine == "base_image_refiner" and refine_steps:
+            if refine_steps:
                 common_args["num_inference_steps"] = refine_steps
+
+            output = self.refiner(**common_args, **refiner_kwargs)
+
+        elif refine == "expert_ensemble_refiner":
+            refiner_kwargs = {"image": output.images, "denoising_start": high_noise_frac}
 
             output = self.refiner(**common_args, **refiner_kwargs)
 
@@ -407,9 +410,9 @@ class Predictor(BasePredictor):
             output.images[i].save(output_path)
             output_paths.append(Path(output_path))
 
-        if len(output_paths) == 0:
+        if not output_paths:
             raise Exception(
-                f"NSFW content detected. Try running it again, or try a different prompt."
+                "NSFW content detected. Try running it again, or try a different prompt."
             )
 
         return output_paths
